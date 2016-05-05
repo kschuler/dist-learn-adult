@@ -9,7 +9,7 @@ Updated Version: May 5, 2016, Kathryn Schuler
 from psychopy import prefs
 prefs.general['audioLib'] = ['pygame']
 
-# import psychopy requirements
+# import the psychopy modules we are using
 from psychopy import visual, core, event, data, sound
 # import datetime, os, sys, itertools
 
@@ -97,6 +97,11 @@ class DistLearnExperiment(object):
         self.trials.saveAsWideText(thisPhase+'datafile.csv', delim=",")
 
     def generateDisplay(self, drawList = None):
+        #
+        # draws whatever is in the drawList
+        # default value is None, which results in a blank screen
+        # must be a list of existing visual stims []
+        # 
         if drawList :
             for item in drawList :
                 item.draw()
