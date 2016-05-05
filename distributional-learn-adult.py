@@ -70,6 +70,7 @@ class DistLearnExperiment(object):
         self.displayInstructions('Do this first')
         self.displayInstructions('Then do this.')
         self.exposurePhase('Z-exposure.xlsx')
+        self.testPhase('Z-exposure.xlsx')
 
     def displayInstructions(self, theseInstructs):
         self.instructions.setText(theseInstructs)
@@ -78,12 +79,25 @@ class DistLearnExperiment(object):
         event.waitKeys('space')
 
     def exposurePhase(self, thisFile, numReps = 1):
+        self.expWindow.flip()
         self.conditionsFile = data.importConditions('conditions/'+thisFile)
         self.trials = data.TrialHandler(self.conditionsFile, method = 'sequential', nReps = numReps, extraInfo = self.expInfo)
         for trial in self.trials :
             thisSequence = filter(None, [trial.A, trial.B, trial.C])
             for item in thisSequence:
                 self.playSound(whichSound='sounds/'+str(item)+'.wav', ISI = 0.50)
+        self.trials.saveAsWideText('edatafile.csv', delim=",")
+
+    def testPhase(self, thisFile, numReps = 1):
+        self.expWindow.flip()
+        self.conditionsFile = data.importConditions('conditions/'+thisFile)
+        self.trials = data.TrialHandler(self.conditionsFile, method = 'sequential', nReps = numReps, extraInfo = self.expInfo)
+        for trial in self.trials :
+            thisSequence = filter(None, [trial.A, trial.B, trial.C])
+            for item in thisSequence:
+                self.playSound(whichSound='sounds/'+str(item)+'.wav', ISI = 0.50)
+            self.collectRating()
+            if event.getKeys(['escape']): core.quit()
         self.trials.saveAsWideText('edatafile.csv', delim=",")
 
     def playSound(self, whichSound, waitDur = True, ISI = 0.0, whatVolume = 1.0):
@@ -95,12 +109,14 @@ class DistLearnExperiment(object):
             core.wait(dur)
         core.wait(ISI)
 
-    def testPhase(self, conditionFile):
-        make the sentence
-        play the sounds
-        wait for rating
-
-
+    def collectRating(self):
+        self.ratingScale.reset()
+        while self.ratingScale.noResponse:
+            self.ratingScale.draw()
+            self.expWindow.flip()
+            if event.getKeys(['escape']): core.quit()
+        rating = self.ratingScale.getRating()
+        self.expWindow.flip()
 
 exp = DistLearnExperiment()
 exp.runExperiment()
