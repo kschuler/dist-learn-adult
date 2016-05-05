@@ -4,17 +4,21 @@ DISTRIBUTIONAL-LEARN-ADULT Paradigm
 Updated Version: May 5, 2016, Kathryn Schuler
 ------------------------
 """
+# make sure we are using the pygame audio library
+# because pyo is not supported for OSX 64-bit python
 from psychopy import prefs
 prefs.general['audioLib'] = ['pygame']
-from psychopy import visual, core, event, data, sound#, info,
-#import datetime, os, sys, itertools
+
+# import psychopy requirements
+from psychopy import visual, core, event, data, sound
+# import datetime, os, sys, itertools
 
 class DistLearnExperiment(object):
     def __init__(self):
         self.expInfo = {
-    			'exp-id': 0000,											# experiment ID number (fixed value)
-    			'subject': raw_input("enter subject no: "), 			# subject ID (requests user input)
-    			'condition': raw_input("enter condition (A or B): ")   	# condition (requests user input)
+    		'exp-id': .0000,                                      # experiment ID number (fixed value)
+    		'subject': raw_input("enter subject no: "),           # subject ID (requests user input)
+    		'condition': raw_input("enter condition (A or B): ")  # condition (requests user input)
 		}
         self.expWindow = visual.Window(
 			units = 'pix',
@@ -69,8 +73,8 @@ class DistLearnExperiment(object):
     def runExperiment(self):
         self.displayInstructions('Do this first')
         self.displayInstructions('Then do this.')
-        self.exposurePhase('Z-exposure.xlsx')
-        self.testPhase('Z-exposure.xlsx')
+        self.expPhase('exposure', 'Z-exposure.xlsx', reps = 1)
+        self.expPhase('test', 'Z-exposure.xlsx', reps = 1)
 
     def displayInstructions(self, theseInstructs):
         self.instructions.setText(theseInstructs)
@@ -78,27 +82,25 @@ class DistLearnExperiment(object):
         self.expWindow.flip()
         event.waitKeys('space')
 
-    def exposurePhase(self, thisFile, numReps = 1):
-        self.expWindow.flip()
+    def expPhase(self, thisPhase = 'exposure', thisFile = None, reps = 1):
+        self.generateDisplay()
         self.conditionsFile = data.importConditions('conditions/'+thisFile)
-        self.trials = data.TrialHandler(self.conditionsFile, method = 'sequential', nReps = numReps, extraInfo = self.expInfo)
+        self.trials = data.TrialHandler(self.conditionsFile, method = 'sequential', nReps = reps, extraInfo = self.expInfo)
         for trial in self.trials :
             thisSequence = filter(None, [trial.A, trial.B, trial.C])
             for item in thisSequence:
                 self.playSound(whichSound='sounds/'+str(item)+'.wav', ISI = 0.50)
-        self.trials.saveAsWideText('edatafile.csv', delim=",")
-
-    def testPhase(self, thisFile, numReps = 1):
-        self.expWindow.flip()
-        self.conditionsFile = data.importConditions('conditions/'+thisFile)
-        self.trials = data.TrialHandler(self.conditionsFile, method = 'sequential', nReps = numReps, extraInfo = self.expInfo)
-        for trial in self.trials :
-            thisSequence = filter(None, [trial.A, trial.B, trial.C])
-            for item in thisSequence:
-                self.playSound(whichSound='sounds/'+str(item)+'.wav', ISI = 0.50)
-            self.collectRating()
+            if thisPhase == 'test':
+                rating = self.collectRating()
+                self.trials.addData('rating', rating)
             if event.getKeys(['escape']): core.quit()
-        self.trials.saveAsWideText('edatafile.csv', delim=",")
+        self.trials.saveAsWideText(thisPhase+'datafile.csv', delim=",")
+
+    def generateDisplay(self, drawList = None):
+        if drawList :
+            for item in drawList :
+                item.draw()
+        self.expWindow.flip()
 
     def playSound(self, whichSound, waitDur = True, ISI = 0.0, whatVolume = 1.0):
         thisSound = sound.Sound(whichSound)
@@ -115,8 +117,8 @@ class DistLearnExperiment(object):
             self.ratingScale.draw()
             self.expWindow.flip()
             if event.getKeys(['escape']): core.quit()
-        rating = self.ratingScale.getRating()
         self.expWindow.flip()
+        return self.ratingScale.getRating()
 
 exp = DistLearnExperiment()
 exp.runExperiment()
