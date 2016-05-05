@@ -4,7 +4,9 @@ DISTRIBUTIONAL-LEARN-ADULT Paradigm
 Updated Version: May 5, 2016, Kathryn Schuler
 ------------------------
 """
-from psychopy import visual, core, event, data#, info,
+from psychopy import prefs
+prefs.general['audioLib'] = ['pygame']
+from psychopy import visual, core, event, data, sound#, info,
 #import datetime, os, sys, itertools
 
 class DistLearnExperiment(object):
@@ -67,7 +69,7 @@ class DistLearnExperiment(object):
     def runExperiment(self):
         self.displayInstructions('Do this first')
         self.displayInstructions('Then do this.')
-
+        self.exposurePhase('Z-exposure.xlsx')
 
     def displayInstructions(self, theseInstructs):
         self.instructions.setText(theseInstructs)
@@ -77,17 +79,26 @@ class DistLearnExperiment(object):
 
     def exposurePhase(self, thisFile, numReps = 1):
         self.conditionsFile = data.importConditions('conditions/'+thisFile)
-		self.trials = data.TrialHandler(self.conditionsFile, method = 'sequential', nReps = numReps, extraInfo = self.expInfo)
-		for trial in self.trials :
-            thisSequence = [trial.A, trial.B, trial.C]
-            filter('None', thisSequence)
+        self.trials = data.TrialHandler(self.conditionsFile, method = 'sequential', nReps = numReps, extraInfo = self.expInfo)
+        for trial in self.trials :
+            thisSequence = filter(None, [trial.A, trial.B, trial.C])
+            for item in thisSequence:
+                self.playSound(whichSound='sounds/'+str(item)+'.wav', ISI = 0.50)
+        self.trials.saveAsWideText('edatafile.csv', delim=",")
 
-        # play the sounds, with required silence
+    def playSound(self, whichSound, waitDur = True, ISI = 0.0, whatVolume = 1.0):
+        thisSound = sound.Sound(whichSound)
+        thisSound.setVolume(whatVolume)
+        thisSound.play()
+        dur = thisSound.getDuration()
+        if waitDur :
+            core.wait(dur)
+        core.wait(ISI)
 
     def testPhase(self, conditionFile):
-        # make the sentence
-        # play the sounds
-        # wait for rating
+        make the sentence
+        play the sounds
+        wait for rating
 
 
 
