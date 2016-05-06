@@ -2,12 +2,28 @@
 """
 DISTRIBUTIONAL-LEARN-ADULT Paradigm
 Updated Version: May 5, 2016, Kathryn Schuler
+
+Documentation available at: https://github.com/kschuler/dist-learn-adult/wiki
 ------------------------
 """
-# make sure we are using the pygame audio library
-# because pyo is not supported for OSX 64-bit python
-from psychopy import prefs
+# make sure we are using the pygame audio library (because pyo is not supported for OSX 64-bit python)
+from psychopy import prefs, gui, core
 prefs.general['audioLib'] = ['pygame']
+
+# Before we start the experiment, request user input with dialog box
+# setup the parameters of the experment first
+EXP_INFO = {
+	'exp-id': '0000',
+	'subject':'', 				                # subject ID (requests typing)
+	'condition': ['control', 'experimental']   	# list of possible conditions (user selects one or the other)
+}
+# display the dialog box and wait for user input
+if not gui.DlgFromDict(
+    EXP_INFO,                                   # the dictionary of experiment information
+    fixed = ['exp-id'],                         # list of which items are fixed (user cannot change)
+    order=['exp-id','subject', 'condition']     # list of 
+    ).OK:
+		core.quit()
 
 # import the psychopy modules we are using
 from psychopy import visual, core, event, data, sound
@@ -15,11 +31,11 @@ from psychopy import visual, core, event, data, sound
 
 class DistLearnExperiment(object):
     def __init__(self):
-        self.expInfo = {
-    		'exp-id': .0000,                                      # experiment ID number (fixed value)
-    		'subject': raw_input("enter subject no: "),           # subject ID (requests user input)
-    		'condition': raw_input("enter condition (A or B): ")  # condition (requests user input)
-		}
+        # self.expInfo = {
+    	# 	'exp-id': .0000,                                      # experiment ID number (fixed value)
+    	# 	'subject': raw_input("enter subject no: "),           # subject ID (requests user input)
+    	# 	'condition': raw_input("enter condition (A or B): ")  # condition (requests user input)
+		# }
         self.expWindow = visual.Window(
 			units = 'pix',
 		 	winType = 'pyglet',
@@ -58,23 +74,27 @@ class DistLearnExperiment(object):
 		)
         self.ratingScale = visual.RatingScale(
 			win = self.expWindow,
-			pos = [0, -300],
+			pos = [0, -150],
 			low = 1,
 			high = 5,
 			precision = 1,
+            choices = (1,2,3,4,5),
 			textColor = 'white',
 			marker = 'triangle',
-			size = 0.60,
+			size = 1.0,
 			stretch = 1.0,
 			lineColor = 'white',
 			markerColor = 'blue',
 			scale = None
 		)
     def runExperiment(self):
-        self.displayInstructions('Do this first')
-        self.displayInstructions('Then do this.')
-        self.expPhase('exposure', 'Z-exposure.csv', reps = 1)
+        #self.displayInstructions('Do this first')
+        #self.displayInstructions('Then do this.')
+        #self.expPhase('exposure', 'Z-exposure.csv', reps = 1)
         self.expPhase('test', 'Z-exposure.csv', reps = 1)
+
+    def setupExperiment(self):
+        pass
 
     def displayInstructions(self, theseInstructs):
         self.instructions.setText(theseInstructs)
@@ -87,6 +107,7 @@ class DistLearnExperiment(object):
         self.conditionsFile = data.importConditions('conditions/'+thisFile)
         self.trials = data.TrialHandler(self.conditionsFile, method = 'sequential', nReps = reps, extraInfo = self.expInfo)
         for trial in self.trials :
+            # fix filter NA for future
             thisSequence = [trial.A]
             for item in thisSequence:
                 self.playSound(whichSound='sounds/'+str(item)+'.wav', ISI = 0.50)
@@ -111,10 +132,13 @@ class DistLearnExperiment(object):
             core.wait(dur)
         core.wait(ISI)
 
-    def collectRating(self):
+    def collectRating(self, instructs = None):
         self.ratingScale.reset()
         while self.ratingScale.noResponse:
             self.ratingScale.draw()
+            # if instructs :
+            #     self.expText.setText(instructs)
+            #     self.expText.draw()
             self.expWindow.flip()
             if event.getKeys(['escape']): core.quit()
         self.expWindow.flip()
