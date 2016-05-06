@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 """
-DISTRIBUTIONAL-LEARN-ADULT Paradigm
+DIST-LEARN-ADULT Paradigm
 Updated Version: May 5, 2016, Kathryn Schuler
 
 Documentation available at: https://github.com/kschuler/dist-learn-adult/wiki
@@ -11,17 +11,17 @@ from psychopy import prefs, gui, core
 prefs.general['audioLib'] = ['pygame']
 
 # Before we start the experiment, request user input with dialog box
-# setup the parameters of the experment first
+# setup the parameters you want to collect from the user
 EXP_INFO = {
 	'exp-id': '0000',
 	'subject':'', 				                # subject ID (requests typing)
 	'condition': ['control', 'experimental']   	# list of possible conditions (user selects one or the other)
 }
-# display the dialog box and wait for user input
+# display a dialog box and wait for user input
 if not gui.DlgFromDict(
-    EXP_INFO,                                   # the dictionary of experiment information
+    EXP_INFO,                                   # the dictionary of experiment information EXP_INFO
     fixed = ['exp-id'],                         # list of which items are fixed (user cannot change)
-    order=['exp-id','subject', 'condition']     # list of 
+    order=['exp-id','subject', 'condition']     # list of order you want them to display in
     ).OK:
 		core.quit()
 
@@ -31,12 +31,7 @@ from psychopy import visual, core, event, data, sound
 
 class DistLearnExperiment(object):
     def __init__(self):
-        # self.expInfo = {
-    	# 	'exp-id': .0000,                                      # experiment ID number (fixed value)
-    	# 	'subject': raw_input("enter subject no: "),           # subject ID (requests user input)
-    	# 	'condition': raw_input("enter condition (A or B): ")  # condition (requests user input)
-		# }
-        self.expWindow = visual.Window(
+        self.expWindow = visual.Window( # psychopy visual.Window()
 			units = 'pix',
 		 	winType = 'pyglet',
 			screen = 0,
@@ -45,11 +40,11 @@ class DistLearnExperiment(object):
 			fullscr = True,
 			allowGUI = False
 		)
-        self.expMouse = event.Mouse(
+        self.expMouse = event.Mouse( # psychopy event.Mouse()
 		 	win = self.expWindow,
 		 	visible = False
 		)
-        self.instructions = visual.TextStim(
+        self.instructions = visual.TextStim( # psychopy visual.TextStim()
 			win = self.expWindow,
 			pos = [0, 300],
 			color = 'white',
@@ -57,7 +52,7 @@ class DistLearnExperiment(object):
 			font = 'Helvetica',
 			wrapWidth = 800
 		)
-        self.progBarOutline = visual.Rect(
+        self.progBarOutline = visual.Rect( # psychopy visual.Rect()
 			win = self.expWindow,
 			pos = [0, 350],
 			width = 680,
@@ -105,7 +100,7 @@ class DistLearnExperiment(object):
     def expPhase(self, thisPhase = 'exposure', thisFile = None, reps = 1):
         self.generateDisplay()
         self.conditionsFile = data.importConditions('conditions/'+thisFile)
-        self.trials = data.TrialHandler(self.conditionsFile, method = 'sequential', nReps = reps, extraInfo = self.expInfo)
+        self.trials = data.TrialHandler(self.conditionsFile, method = 'sequential', nReps = reps, extraInfo = EXP_INFO)
         for trial in self.trials :
             # fix filter NA for future
             thisSequence = [trial.A]
