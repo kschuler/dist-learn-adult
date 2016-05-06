@@ -12,16 +12,13 @@ git clone https://github.com/kschuler/dist-learn-adult
 Open 'experiment.py' in the *Coder view* of PsychoPy and run. (version 1.83.01 is known to work)
 
 ### Option 2: run in a conda environment
-Create a conda environment with the `environment.yml` file.  
+Navigate to your local copy of this repo and create a conda environment with `environment.yml`
 ```
 conda env create -f environment.yml
 ```
-Navigate to your local copy of this repo and activate the environment
+Activate the environment and run with pythonw
 ```
 source activate psychopyenv
-```
-Run the `experiment.py` file with pythonw
-```
 pythonw experiment.py
 ```
 
