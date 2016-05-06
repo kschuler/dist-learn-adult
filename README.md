@@ -1,1 +1,1 @@
-# distributional-learn-adult
+# dist-learn-adult
