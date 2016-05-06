@@ -8,10 +8,10 @@ Clone the repository:
 ```
 git clone https://github.com/kschuler/dist-learn-adult
 ```
-### Option 1: run in standalone PsychoPy
+### Run in standalone PsychoPy
 Open 'experiment.py' in the *Coder view* of PsychoPy and run. (version 1.83.01 is known to work)
 
-### Option 2: run in a conda environment
+### or, Run in a conda environment
 Navigate to your local copy of this repo and create a conda environment with `environment.yml`
 ```
 conda env create -f environment.yml
