@@ -73,8 +73,8 @@ class DistLearnExperiment(object):
     def runExperiment(self):
         self.displayInstructions('Do this first')
         self.displayInstructions('Then do this.')
-        self.expPhase('exposure', 'Z-exposure.xlsx', reps = 1)
-        self.expPhase('test', 'Z-exposure.xlsx', reps = 1)
+        self.expPhase('exposure', 'Z-exposure.csv', reps = 1)
+        self.expPhase('test', 'Z-exposure.csv', reps = 1)
 
     def displayInstructions(self, theseInstructs):
         self.instructions.setText(theseInstructs)
@@ -87,7 +87,7 @@ class DistLearnExperiment(object):
         self.conditionsFile = data.importConditions('conditions/'+thisFile)
         self.trials = data.TrialHandler(self.conditionsFile, method = 'sequential', nReps = reps, extraInfo = self.expInfo)
         for trial in self.trials :
-            thisSequence = filter(None, [trial.A, trial.B, trial.C])
+            thisSequence = [trial.A]
             for item in thisSequence:
                 self.playSound(whichSound='sounds/'+str(item)+'.wav', ISI = 0.50)
             if thisPhase == 'test':
@@ -97,11 +97,6 @@ class DistLearnExperiment(object):
         self.trials.saveAsWideText(thisPhase+'datafile.csv', delim=",")
 
     def generateDisplay(self, drawList = None):
-        #
-        # draws whatever is in the drawList
-        # default value is None, which results in a blank screen
-        # must be a list of existing visual stims []
-        # 
         if drawList :
             for item in drawList :
                 item.draw()
